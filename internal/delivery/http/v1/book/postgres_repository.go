@@ -5,22 +5,21 @@ import (
 	"github.com/zarasfara/go-rest-template/internal/entity"
 )
 
-type repository struct {
+type postgresRepository struct {
 	db *sqlx.DB
 }
 
 func NewPostgresRepository(db *sqlx.DB) Repository {
-	return &repository{
+	return &postgresRepository{
 		db: db,
 	}
 }
 
-func (r repository) GetAll() ([]entity.Book, error) {
-	var books []entity.Book = []entity.Book {
-		{
-			Id: 1,
-		},
+func (r *postgresRepository) GetBooks() ([]entity.Book, error) {
+	var books []entity.Book
+	err := r.db.Select(&books, "SELECT * FROM books")
+	if err!= nil {
+		return nil, err
 	}
-
 	return books, nil
 }

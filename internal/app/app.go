@@ -16,8 +16,8 @@ func Run(cfg *config.Config) {
 	}
 
 	// build http
-	serv := server.NewServer(cfg, http.NewRouter(db))
+	server := server.NewServer(cfg, http.NewRouter(db))
 
 	// start http
-	serv.Run()
+	server.Run()
 }

@@ -7,23 +7,26 @@ import (
 	"github.com/zarasfara/go-rest-template/internal/entity"
 )
 
-// RegisterHandlers sets up the routing of the HTTP handlers.
-func RegisterHandlers(r *gin.RouterGroup, service Service) {
-	res := resource{service}
-
-	r.GET("/", res.get)
-
-}
-
 type resource struct {
 	service Service
 }
 
 func (r resource) get(c *gin.Context) {
-	var books []entity.Book
-	books = append(books, entity.Book{Id: 1})
+	var books []entity.Book = []entity.Book{
+		{
+			Id: 1,
+		},
+		{
+			Id: 2,
+		},
+	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"data": books,
-	})
+	c.JSON(http.StatusOK, books)
+}
+
+// RegisterHandlers sets up the routing of the HTTP handlers.
+func RegisterHandlers(r *gin.RouterGroup, service Service) {
+	res := resource{service}
+
+	r.GET("/", res.get)
 }
