@@ -15,7 +15,7 @@ func NewRouter(db *sqlx.DB) *gin.Engine {
 	api := router.Group("/api")
 	v1 := api.Group("/v1")
 
-	book.RegisterHandlers(v1.Group("/books"), book.NewService(book.NewRepository(db)))
+	book.RegisterHandlers(v1.Group("/books"), book.NewService(book.NewPostgresRepository(db)))
 
 	return router
 }

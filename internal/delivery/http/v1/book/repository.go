@@ -1,16 +1,7 @@
 package book
 
-import "github.com/jmoiron/sqlx"
+import "github.com/zarasfara/go-rest-template/internal/entity"
 
 type Repository interface {
-}
-
-type repository struct {
-	db *sqlx.DB
-}
-
-func NewRepository(db *sqlx.DB) *repository {
-	return &repository{
-		db: db,
-	}
+	GetAll() ([]entity.Book, error)
 }
