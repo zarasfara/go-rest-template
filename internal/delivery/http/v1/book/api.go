@@ -12,7 +12,6 @@ func RegisterHandlers(r *gin.RouterGroup, service Service) {
 	res := resource{service}
 
 	r.GET("/", res.get)
-
 }
 
 type resource struct {
