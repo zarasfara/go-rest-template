@@ -1,19 +1,28 @@
 package main
 
 import (
+	"log/slog"
 	"os"
 
 	"github.com/joho/godotenv"
-	"github.com/sirupsen/logrus"
 	"github.com/zarasfara/go-rest-template/internal/app"
 	"github.com/zarasfara/go-rest-template/internal/config"
+	"github.com/zarasfara/go-rest-template/internal/logger"
 )
 
 func main() {
 	if err := godotenv.Load(); err != nil {
-		logrus.Fatalf("error loading .env file: %s", err.Error())
+		slog.Error("error loading .env file", "error", err)
 	}
-	cfg := config.Init(os.Getenv("APP_ENV"))
+
+	env := os.Getenv("APP_ENV")
+	if env == "" {
+		env = "development"
+	}
+	// init logger
+	logger.InitLogger(env)
+
+	cfg := config.Init(env)
 
 	app.Run(cfg)
 }

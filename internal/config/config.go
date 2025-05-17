@@ -1,10 +1,10 @@
 package config
 
 import (
-	"os"
+	"fmt"
+	"log/slog"
 
-	"github.com/sirupsen/logrus"
-	"github.com/spf13/viper"
+	"github.com/ilyakaznacheev/cleanenv"
 )
 
 const (
@@ -14,21 +14,21 @@ const (
 
 type (
 	Config struct {
-		HTTP HTTPConfig
+		HTTP HTTPConfig 
 		DB   DBConfig
 		JWT  JWTConfig
 	}
 
 	HTTPConfig struct {
-		Port string
+		Port string `yaml:"port" env-default:"5432"`
 	}
 	DBConfig struct {
-		Host     string
-		Username string
-		Password string
-		Database string
-		Port     string
-		SSLMode  string
+		Host     string `env:"DB_HOST" env-default:"localhost"`
+		Username string `env:"DB_USERNAME" env-default:"localhost"`
+		Password string `env:"DB_PASSWORD" env-default:"localhost"`
+		Database string `env:"DB_DATABASE" env-default:"test_db"`
+		Port     string `env:"DB_PORT" env-default:"5432"`
+		SSLMode  string `yaml:"db.sslmode" env-default:"false"`
 	}
 	JWTConfig struct {
 		SecretKey string `json:"secret_key"`
@@ -36,41 +36,13 @@ type (
 )
 
 func Init(configFile string) *Config {
-	populateDefaults()
 
-	if err := parseConfig(configFile); err != nil {
-		logrus.Fatalf("cannot parse config: %s", err.Error())
+	cfg := &Config{}
+
+	err := cleanenv.ReadConfig(fmt.Sprintf("./config/%s.yml", configFile), cfg)
+	if err != nil {
+		slog.Error("error reading config file", "error", err)
 	}
-
-	var cfg *Config
-
-	setFromEnv(cfg)
 
 	return cfg
-}
-
-// unmarshal set parametres from config.yml file.
-func unmarshal(cfg *Config) error {
-	if err := viper.UnmarshalKey("http", &cfg.HTTP); err != nil {
-		logrus.Fatalf("error read config: %s", err)
-	}
-
-	return nil
-}
-
-// setFromEnv set parametres from .env.
-func setFromEnv(cfg *Config) {
-	cfg.JWT.SecretKey = os.Getenv("JWT_SIGNING_TOKEN")
-}
-
-func populateDefaults() {
-	viper.SetDefault("http.port", defaultServerPort)
-}
-
-// parseConfig parse config from file config.yml.
-func parseConfig(configFile string) error {
-	viper.AddConfigPath("configs")
-	viper.SetConfigName(configFile)
-
-	return viper.ReadInConfig()
 }

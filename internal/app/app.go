@@ -1,7 +1,8 @@
 package app
 
 import (
-	"github.com/sirupsen/logrus"
+	"log/slog"
+
 	"github.com/zarasfara/go-rest-template/internal/config"
 	"github.com/zarasfara/go-rest-template/internal/delivery/http"
 	"github.com/zarasfara/go-rest-template/internal/server"
@@ -12,7 +13,7 @@ func Run(cfg *config.Config) {
 	// connect to database
 	db, err := postgresql.Connect(&cfg.DB)
 	if err != nil {
-		logrus.Fatalf("failed connect to database: %s", err.Error())
+		slog.Error("failed connect to database", "error", err)
 	}
 
 	// build http
